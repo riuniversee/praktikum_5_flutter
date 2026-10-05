@@ -16,21 +16,13 @@ class CourseExplorerApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: const Tahap1Page(),
+      home: const Tahap2Page(),
     );
   }
 }
 
-class Tahap1Page extends StatefulWidget {
-  const Tahap1Page({super.key});
-
-  @override
-  State<Tahap1Page> createState() => _Tahap1PageState();
-}
-
-class _Tahap1PageState extends State<Tahap1Page> {
-  // Flag untuk mendemonstrasikan ukuran Hard-Coded (500px) vs Fleksibel (Adaptive)
-  bool isHardCoded = true;
+class Tahap2Page extends StatelessWidget {
+  const Tahap2Page({super.key});
 
   // Identitas Mahasiswa
   final String studentName = 'Kadek Ripa Adi Putra';
@@ -38,13 +30,19 @@ class _Tahap1PageState extends State<Tahap1Page> {
 
   @override
   Widget build(BuildContext context) {
+    // TAHAP 2: Membaca informasi layar menggunakan MediaQuery
+    final mediaQuery = MediaQuery.of(context);
+    final size = mediaQuery.size;
+    final orientation = mediaQuery.orientation;
+    final isCompact = size.width < 600;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tahap 1: Responsive Problem'),
+        title: const Text('Tahap 2: MediaQuery Information'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,65 +71,81 @@ class _Tahap1PageState extends State<Tahap1Page> {
             ),
             const SizedBox(height: 20),
 
-            // Tombol Switcher Mode
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  setState(() {
-                    isHardCoded = !isHardCoded;
-                  });
-                },
-                icon: Icon(isHardCoded ? Icons.warning_amber : Icons.check_circle),
-                label: Text(
-                  isHardCoded
-                      ? 'Mode: Hard-coded Width (500px)'
-                      : 'Mode: Flexible (double.infinity)',
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isHardCoded ? Colors.red.shade100 : Colors.green.shade100,
-                  foregroundColor: isHardCoded ? Colors.red.shade900 : Colors.green.shade900,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Kotak Pengujian Ukuran
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                width: isHardCoded ? 500 : MediaQuery.of(context).size.width - 32,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isHardCoded ? Colors.red.shade100 : Colors.green.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: isHardCoded ? Colors.red : Colors.green,
-                    width: 2,
-                  ),
-                ),
+            // Card Informasi MediaQuery
+            Card(
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      isHardCoded
-                          ? '⚠️ Hard-coded Width (500px)'
-                          : '✅ Flexible / Adaptive Width',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: isHardCoded ? Colors.red.shade900 : Colors.green.shade900,
+                    const Row(
+                      children: [
+                        Icon(Icons.aspect_ratio, color: Colors.blue),
+                        SizedBox(width: 8),
+                        Text(
+                          'Informasi Layar Real-time (MediaQuery)',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Divider(height: 24),
+                    ListTile(
+                      leading: const Icon(Icons.swap_horiz),
+                      title: const Text('Lebar Layar (Width)'),
+                      trailing: Text(
+                        '${size.width.toStringAsFixed(1)} px',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      isHardCoded
-                          ? 'Ukuran 500px melebihi lebar rata-rata layar HP (360px-412px).\n'
-                            'Elemen ini terpotong di tepi kanan jika tidak bisa di-scroll.'
-                          : 'Ukuran elemen menyesuaikan dengan lebar layar HP yang tersedia secara proporsional.',
-                      style: TextStyle(
-                        color: isHardCoded ? Colors.red.shade800 : Colors.green.shade800,
+                    ListTile(
+                      leading: const Icon(Icons.swap_vert),
+                      title: const Text('Tinggi Layar (Height)'),
+                      trailing: Text(
+                        '${size.height.toStringAsFixed(1)} px',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        orientation == Orientation.portrait
+                            ? Icons.stay_current_portrait
+                            : Icons.stay_current_landscape,
+                      ),
+                      title: const Text('Orientasi Layar'),
+                      trailing: Text(
+                        orientation.name.toUpperCase(),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Status Breakpoint Sederhana
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isCompact ? Colors.orange.shade100 : Colors.green.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            isCompact ? Icons.phone_android : Icons.tablet_mac,
+                            color: isCompact ? Colors.orange.shade900 : Colors.green.shade900,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Kategori Breakpoint: ${isCompact ? "Compact (<600px)" : "Wide (>=600px)"}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isCompact ? Colors.orange.shade900 : Colors.green.shade900,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
