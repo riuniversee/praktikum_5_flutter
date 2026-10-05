@@ -16,33 +16,55 @@ class CourseExplorerApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: const Tahap2Page(),
+      home: const Tahap3Page(),
     );
   }
 }
 
-class Tahap2Page extends StatelessWidget {
-  const Tahap2Page({super.key});
+class Tahap3Page extends StatelessWidget {
+  const Tahap3Page({super.key});
 
   // Identitas Mahasiswa
   final String studentName = 'Kadek Ripa Adi Putra';
   final String studentId = '2455011011';
 
+  // Dummy Data Daftar Matakuliah
+  final List<Map<String, String>> courses = const [
+    {
+      'code': 'CS101',
+      'title': 'Pemrograman Mobile',
+      'instructor': 'Pak Agus',
+      'icon': 'phone_android',
+    },
+    {
+      'code': 'CS102',
+      'title': 'Basis Data Lanjut',
+      'instructor': 'Pak Sindu',
+      'icon': 'storage',
+    },
+    {
+      'code': 'CS103',
+      'title': 'Pemrograman Web',
+      'instructor': 'Pak YOTA',
+      'icon': 'web',
+    },
+    {
+      'code': 'CS104',
+      'title': 'Kecerdasan Buatan',
+      'instructor': 'Bu Maria',
+      'icon': 'psychology',
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
-    // TAHAP 2: Membaca informasi layar menggunakan MediaQuery
-    final mediaQuery = MediaQuery.of(context);
-    final size = mediaQuery.size;
-    final orientation = mediaQuery.orientation;
-    final isCompact = size.width < 600;
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tahap 2: MediaQuery Information'),
+        title: const Text('Tahap 3: LayoutBuilder & Breakpoints'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,92 +91,168 @@ class Tahap2Page extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // Card Informasi MediaQuery
-            Card(
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Icon(Icons.aspect_ratio, color: Colors.blue),
-                        SizedBox(width: 8),
-                        Text(
-                          'Informasi Layar Real-time (MediaQuery)',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+            // TAHAP 3: Menggunakan LayoutBuilder untuk menentukan layout berdasarkan maxWidth
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isCompact = constraints.maxWidth < 600;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Status Constraints Indikator
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: isCompact
+                              ? Colors.orange.shade50
+                              : Colors.teal.shade50,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: isCompact
+                                ? Colors.orange.shade300
+                                : Colors.teal.shade300,
                           ),
                         ),
-                      ],
-                    ),
-                    const Divider(height: 24),
-                    ListTile(
-                      leading: const Icon(Icons.swap_horiz),
-                      title: const Text('Lebar Layar (Width)'),
-                      trailing: Text(
-                        '${size.width.toStringAsFixed(1)} px',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.swap_vert),
-                      title: const Text('Tinggi Layar (Height)'),
-                      trailing: Text(
-                        '${size.height.toStringAsFixed(1)} px',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    ListTile(
-                      leading: Icon(
-                        orientation == Orientation.portrait
-                            ? Icons.stay_current_portrait
-                            : Icons.stay_current_landscape,
-                      ),
-                      title: const Text('Orientasi Layar'),
-                      trailing: Text(
-                        orientation.name.toUpperCase(),
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    // Status Breakpoint Sederhana
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: isCompact ? Colors.orange.shade100 : Colors.green.shade100,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            isCompact ? Icons.phone_android : Icons.tablet_mac,
-                            color: isCompact ? Colors.orange.shade900 : Colors.green.shade900,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Kategori Breakpoint: ${isCompact ? "Compact (<600px)" : "Wide (>=600px)"}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: isCompact ? Colors.orange.shade900 : Colors.green.shade900,
+                        child: Row(
+                          children: [
+                            Icon(
+                              isCompact
+                                  ? Icons.phone_iphone
+                                  : Icons.desktop_windows,
+                              color: isCompact
+                                  ? Colors.orange.shade800
+                                  : Colors.teal.shade800,
+                              size: 20,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Max Width: ${constraints.maxWidth.toStringAsFixed(1)}px | Mode: ${isCompact ? "Compact (1 Kolom)" : "Wide (2 Kolom Grid)"}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: isCompact
+                                      ? Colors.orange.shade900
+                                      : Colors.teal.shade900,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                      const SizedBox(height: 16),
+
+                      // Responsive Layout
+                      Expanded(
+                        child: isCompact
+                            ? _buildListView() // Layout 1 Kolom untuk Layar Sempit
+                            : _buildGridView(), // Layout 2 Kolom untuk Layar Lebar
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  // Tampilan 1 Kolom (Compact Layout)
+  Widget _buildListView() {
+    return ListView.builder(
+      itemCount: courses.length,
+      itemBuilder: (context, index) {
+        final course = courses[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: 12),
+          elevation: 2,
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Colors.blue.shade100,
+              child: const Icon(Icons.book, color: Colors.blue),
+            ),
+            title: Text(
+              course['title']!,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text('Dosen: ${course['instructor']}'),
+            trailing: Chip(
+              label: Text(course['code']!),
+              backgroundColor: Colors.blue.shade50,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // Tampilan 2 Kolom (Wide Layout)
+  Widget _buildGridView() {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 2.5,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: courses.length,
+      itemBuilder: (context, index) {
+        final course = courses[index];
+        return Card(
+          elevation: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: Colors.teal.shade100,
+                  child: const Icon(Icons.book, color: Colors.teal),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        course['title']!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Dosen: ${course['instructor']}',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Chip(
+                  label: Text(
+                    course['code']!,
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                  backgroundColor: Colors.teal.shade50,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
