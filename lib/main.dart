@@ -22,7 +22,7 @@ class CourseExplorerApp extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------------
-// HOME PAGE (Screen 1)
+// HOME PAGE (Daftar Matakuliah)
 // -----------------------------------------------------------------------------
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -31,11 +31,36 @@ class HomePage extends StatelessWidget {
   final String studentName = 'Kadek Ripa Adi Putra';
   final String studentId = '2455011011';
 
+  // Daftar Course Statis
+  final List<Map<String, dynamic>> courses = const [
+    {
+      'code': 'MOB04',
+      'title': 'Responsive Layout',
+      'credits': 3,
+      'status': 'Active',
+      'desc': 'Mempelajari MediaQuery, LayoutBuilder, dan GridView responsif.'
+    },
+    {
+      'code': 'MOB05',
+      'title': 'Navigation & Routing',
+      'credits': 3,
+      'status': 'Planned',
+      'desc': 'Membuat navigasi multi-screen, passing data, dan returning data.'
+    },
+    {
+      'code': 'MOB06',
+      'title': 'User Interaction',
+      'credits': 2,
+      'status': 'Planned',
+      'desc': 'Handling gestures, InkWell, buttons, dan feedback UI.'
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tahap 7: Home Page'),
+        title: const Text('Tahap 8: Passing Data'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -67,49 +92,53 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
             const Text(
-              'Materi Navigasi Stack Dasar',
+              'Pilih Matakuliah untuk Melihat Detail:',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 12),
 
-            Card(
-              elevation: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Tekan tombol di bawah untuk menguji Navigator.push() menuju DetailPage:',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          // TAHAP 7: Navigasi berpindah ke DetailPage menggunakan Navigator.push
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const DetailPage(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.arrow_forward),
-                        label: const Text('Buka Detail Page'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+            // Daftar List Matakuliah
+            Expanded(
+              child: ListView.builder(
+                itemCount: courses.length,
+                itemBuilder: (context, index) {
+                  final course = courses[index];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    elevation: 2,
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.blue.shade100,
+                        child: Text(
+                          course['code'],
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
                         ),
                       ),
+                      title: Text(
+                        course['title'],
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text('${course['credits']} SKS • Status: ${course['status']}'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        // TAHAP 8: Mengirim data course melalui constructor CourseDetailPage
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CourseDetailPage(course: course),
+                          ),
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ],
@@ -120,10 +149,15 @@ class HomePage extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------------
-// DETAIL PAGE (Screen 2)
+// COURSE DETAIL PAGE (Menerima Data via Constructor)
 // -----------------------------------------------------------------------------
-class DetailPage extends StatelessWidget {
-  const DetailPage({super.key});
+class CourseDetailPage extends StatelessWidget {
+  final Map<String, dynamic> course;
+
+  const CourseDetailPage({
+    super.key,
+    required this.course,
+  });
 
   final String studentName = 'Kadek Ripa Adi Putra';
   final String studentId = '2455011011';
@@ -132,7 +166,7 @@ class DetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detail Page'),
+        title: Text(course['title']),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -164,50 +198,57 @@ class DetailPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
-            const Card(
+            Card(
               elevation: 2,
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(Icons.info_outline, color: Colors.blue),
-                        SizedBox(width: 8),
-                        Text(
-                          'Halaman Detail Terbuka',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
+                        Chip(
+                          label: Text(course['code']),
+                          backgroundColor: Colors.blue.shade50,
+                        ),
+                        Chip(
+                          label: Text('${course['credits']} SKS'),
+                          backgroundColor: Colors.grey.shade200,
                         ),
                       ],
                     ),
-                    Divider(height: 20),
+                    const SizedBox(height: 12),
                     Text(
-                      'Halaman ini dimasukkan ke dalam Navigation Stack menggunakan Navigator.push(). Anda bisa kembali menggunakan tombol back bawaan AppBar di kiri atas atau tombol di bawah.',
-                      style: TextStyle(fontSize: 13),
+                      course['title'],
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Status: ${course['status']}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: course['status'] == 'Active'
+                            ? Colors.green.shade800
+                            : Colors.orange.shade800,
+                      ),
+                    ),
+                    const Divider(height: 24),
+                    const Text(
+                      'Deskripsi Materi:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      course['desc'],
+                      style: TextStyle(color: Colors.grey.shade800),
                     ),
                   ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  // TAHAP 7: Kembali ke halaman sebelumnya menggunakan Navigator.pop
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.arrow_back),
-                label: const Text('Kembali ke Home Page (Navigator.pop)'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
               ),
             ),
