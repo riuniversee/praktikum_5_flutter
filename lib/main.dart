@@ -16,55 +16,89 @@ class CourseExplorerApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: const Tahap13Page(),
+      home: const Tahap14Page(),
     );
   }
 }
 
-class Tahap13Page extends StatefulWidget {
-  const Tahap13Page({super.key});
+class Tahap14Page extends StatefulWidget {
+  const Tahap14Page({super.key});
 
   @override
-  State<Tahap13Page> createState() => _Tahap13PageState();
+  State<Tahap14Page> createState() => _Tahap14PageState();
 }
 
-class _Tahap13PageState extends State<Tahap13Page> {
+class _Tahap14PageState extends State<Tahap14Page> {
   // Identitas Mahasiswa (Wajib)
   final String studentName = 'Kadek Ripa Adi Putra';
   final String studentId = '2455011011';
 
-  // Key untuk Form State & Validation
-  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
-  // Controller / Field Variables
-  late final TextEditingController _nameController;
-  late final TextEditingController _idController;
-  final TextEditingController _commentController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    // Pre-fill identitas default
-    _nameController = TextEditingController(text: studentName);
-    _idController = TextEditingController(text: studentId);
+  // TAHAP 14: Menampilkan AlertDialog Konfirmasi
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.help_outline, color: Colors.blue),
+              SizedBox(width: 8),
+              Text('Konfirmasi Aksi'),
+            ],
+          ),
+          content: const Text(
+            'Apakah Anda yakin ingin menyimpan dan mengirimkan feedback ini?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(dialogContext); // Tutup dialog
+                _processSubmit(); // Jalankan proses
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Ya, Kirim'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _idController.dispose();
-    _commentController.dispose();
-    super.dispose();
-  }
+  // Simulasi Proses Loading & SnackBar
+  Future<void> _processSubmit() async {
+    setState(() {
+      _isLoading = true;
+    });
 
-  void _submitForm() {
-    // TAHAP 13: Memanggil fungsi validate() dari FormState
-    if (_formKey.currentState!.validate()) {
-      // Jika validasi sukses
+    // Simulasi delay jaringan/proses 2 detik
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      // TAHAP 14: Menampilkan SnackBar Umpan Balik
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Form Valid! Feedback berhasil dikirim.'),
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 8),
+              Text('Data berhasil disimpan ke sistem!'),
+            ],
+          ),
           backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),
         ),
       );
     }
@@ -74,11 +108,11 @@ class _Tahap13PageState extends State<Tahap13Page> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tahap 13: Form Input & Validasi'),
+        title: const Text('Tahap 14: Feedback UI'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,92 +143,53 @@ class _Tahap13PageState extends State<Tahap13Page> {
             const SizedBox(height: 20),
 
             const Text(
-              'Form Feedback Matakuliah',
+              'Demo Dialog, Loading, & SnackBar:',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 12),
 
-            // TAHAP 13: Form dengan GlobalKey<FormState>
-            Form(
-              key: _formKey,
-              child: Card(
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      // Field Nama
-                      TextFormField(
-                        controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Nama Lengkap',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.person_outline),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Nama wajib diisi';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 12),
+            Card(
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Tekan tombol di bawah untuk memicu AlertDialog konfirmasi, lalu mengamati animasi loading dan SnackBar umpan balik:',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                    const SizedBox(height: 20),
 
-                      // Field NIM
-                      TextFormField(
-                        controller: _idController,
-                        decoration: const InputDecoration(
-                          labelText: 'NIM Mahasiswa',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.badge_outlined),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'NIM wajib diisi';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Field Komentar / Feedback (Validasi Minimal 5 Karakter)
-                      TextFormField(
-                        controller: _commentController,
-                        maxLines: 3,
-                        decoration: const InputDecoration(
-                          labelText: 'Komentar / Feedback',
-                          hintText: 'Tuliskan masukan Anda...',
-                          border: OutlineInputBorder(),
-                          alignLabelWithHint: true,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Komentar tidak boleh kosong';
-                          }
-                          if (value.trim().length < 5) {
-                            return 'Komentar minimal 5 karakter';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Submit Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: _submitForm,
-                          icon: const Icon(Icons.check_circle_outline),
-                          label: const Text('Kirim & Validasi Form'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                    // Indikator Loading / Tombol Aksi
+                    _isLoading
+                        ? Column(
+                            children: const [
+                              CircularProgressIndicator(),
+                              SizedBox(height: 12),
+                              Text(
+                                'Memproses data...',
+                                style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          )
+                        : SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: _showConfirmationDialog,
+                              icon: const Icon(Icons.send),
+                              label: const Text('Simpan Data & Kirim Feedback'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ),
