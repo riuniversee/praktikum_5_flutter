@@ -16,247 +16,177 @@ class CourseExplorerApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: const MainShellPage(),
+      home: const Tahap12Page(),
     );
   }
 }
 
-// -----------------------------------------------------------------------------
-// MAIN SHELL PAGE (Adaptive Navigation Shell)
-// -----------------------------------------------------------------------------
-class MainShellPage extends StatefulWidget {
-  const MainShellPage({super.key});
+class Tahap12Page extends StatefulWidget {
+  const Tahap12Page({super.key});
 
   @override
-  State<MainShellPage> createState() => _MainShellPageState();
+  State<Tahap12Page> createState() => _Tahap12PageState();
 }
 
-class _MainShellPageState extends State<MainShellPage> {
-  int _selectedIndex = 0;
-
+class _Tahap12PageState extends State<Tahap12Page> {
   // Identitas Mahasiswa (Wajib)
   final String studentName = 'Kadek Ripa Adi Putra';
   final String studentId = '2455011011';
 
+  // State untuk Toggle Favorit pada Course Item
+  bool isFavorite = false;
+
   @override
   Widget build(BuildContext context) {
-    // Daftar Halaman Destinasi
-    final List<Widget> pages = [
-      _buildHomePage(),
-      _buildCoursesPage(),
-      _buildProfilePage(),
-    ];
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isExpanded = constraints.maxWidth >= 840;
-
-        // TAHAP 11: Layar Lebar (Expanded >= 840px) -> Gunakan NavigationRail
-        if (isExpanded) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Tahap 11: Adaptive Navigation (Rail)'),
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
-            ),
-            body: Row(
-              children: [
-                NavigationRail(
-                  selectedIndex: _selectedIndex,
-                  onDestinationSelected: (int index) {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
-                  },
-                  labelType: NavigationRailLabelType.all,
-                  destinations: const [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.home_outlined),
-                      selectedIcon: Icon(Icons.home),
-                      label: Text('Home'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.school_outlined),
-                      selectedIcon: Icon(Icons.school),
-                      label: Text('Courses'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.person_outlined),
-                      selectedIcon: Icon(Icons.person),
-                      label: Text('Profile'),
-                    ),
-                  ],
-                ),
-                const VerticalDivider(thickness: 1, width: 1),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        _buildHeader(),
-                        const SizedBox(height: 16),
-                        Expanded(child: pages[_selectedIndex]),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        // TAHAP 11: Layar Sempit/Medium (< 840px) -> Gunakan NavigationBar
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Tahap 11: Adaptive Navigation (Bar)'),
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 16),
-                Expanded(child: pages[_selectedIndex]),
-              ],
-            ),
-          ),
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: (int index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home),
-                label: 'Home',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.school_outlined),
-                selectedIcon: Icon(Icons.school),
-                label: 'Courses',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.person_outlined),
-                selectedIcon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  // Header Identitas
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.blue.shade50,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue.shade200),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Tahap 12: User Interaction'),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
       ),
-      child: Row(
-        children: [
-          const Icon(Icons.person, color: Colors.blue),
-          const SizedBox(width: 8),
-          Text(
-            '$studentId - $studentName',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Page 1: Home
-  Widget _buildHomePage() {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.home, size: 48, color: Colors.blue),
-            SizedBox(height: 12),
-            Text(
-              'Home Page (Adaptive)',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Coba ubah ukuran layar/orientasi emulator untuk melihat pergantian antaramenu bawah (NavigationBar) dan menu samping (NavigationRail).',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Page 2: Courses
-  Widget _buildCoursesPage() {
-    return Card(
-      elevation: 2,
-      child: Padding(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text(
-              'Daftar Matakuliah',
+          children: [
+            // Header Identitas Mahasiswa
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue.shade200),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.person, color: Colors.blue),
+                  const SizedBox(width: 8),
+                  Text(
+                    '$studentId - $studentName',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            const Text(
+              'Demo InkWell & GestureDetector:',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-            Divider(height: 20),
-            ListTile(
-              leading: CircleAvatar(child: Text('1')),
-              title: Text('Responsive Layout'),
-              subtitle: Text('MOB04 • 3 SKS'),
+            const SizedBox(height: 8),
+            Text(
+              '• Ketuk (Tap) untuk toggle status Favorit (Efek InkWell Ripple)\n• Tekan lama (Long Press) untuk membuka Info Tambahan (GestureDetector)',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
             ),
-            ListTile(
-              leading: CircleAvatar(child: Text('2')),
-              title: Text('Navigation & Routing'),
-              subtitle: Text('MOB05 • 3 SKS'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+            const SizedBox(height: 16),
 
-  // Page 3: Profile
-  Widget _buildProfilePage() {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircleAvatar(
-              radius: 36,
-              backgroundColor: Colors.blue,
-              child: Icon(Icons.person, size: 40, color: Colors.white),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              studentName,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            Text(
-              'NIM: $studentId',
-              style: TextStyle(color: Colors.grey.shade700),
+            // Card Interaktif dengan InkWell & GestureDetector
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () {
+                  // Toggle state favorit saat ditekan
+                  setState(() {
+                    isFavorite = !isFavorite;
+                  });
+                },
+                child: GestureDetector(
+                  onLongPress: () {
+                    // TAHAP 12: Long press gesture untuk aksi tambahan
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) => Container(
+                        padding: const EdgeInsets.all(24),
+                        width: double.infinity,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Informasi Matakuliah (Long Press Detected)',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.blue.shade900,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Matakuliah Responsive Layout (MOB04) berfokus pada pembentukan UI Flutter adaptif untuk berbagai ukuran layar.',
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Tutup'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.blue.shade100,
+                            child: const Icon(Icons.book, color: Colors.blue),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Responsive Layout',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'MOB04 • Tap / Hold me!',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Toggle Icon Favorite
+                          IconButton(
+                            icon: Icon(
+                              isFavorite ? Icons.favorite : Icons.favorite_border,
+                              color: isFavorite ? Colors.red : Colors.grey,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                isFavorite = !isFavorite;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
