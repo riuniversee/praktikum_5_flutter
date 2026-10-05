@@ -16,35 +16,69 @@ class CourseExplorerApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: const Tahap12Page(),
+      home: const Tahap13Page(),
     );
   }
 }
 
-class Tahap12Page extends StatefulWidget {
-  const Tahap12Page({super.key});
+class Tahap13Page extends StatefulWidget {
+  const Tahap13Page({super.key});
 
   @override
-  State<Tahap12Page> createState() => _Tahap12PageState();
+  State<Tahap13Page> createState() => _Tahap13PageState();
 }
 
-class _Tahap12PageState extends State<Tahap12Page> {
+class _Tahap13PageState extends State<Tahap13Page> {
   // Identitas Mahasiswa (Wajib)
   final String studentName = 'Kadek Ripa Adi Putra';
   final String studentId = '2455011011';
 
-  // State untuk Toggle Favorit pada Course Item
-  bool isFavorite = false;
+  // Key untuk Form State & Validation
+  final _formKey = GlobalKey<FormState>();
+
+  // Controller / Field Variables
+  late final TextEditingController _nameController;
+  late final TextEditingController _idController;
+  final TextEditingController _commentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-fill identitas default
+    _nameController = TextEditingController(text: studentName);
+    _idController = TextEditingController(text: studentId);
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _idController.dispose();
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  void _submitForm() {
+    // TAHAP 13: Memanggil fungsi validate() dari FormState
+    if (_formKey.currentState!.validate()) {
+      // Jika validasi sukses
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Form Valid! Feedback berhasil dikirim.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tahap 12: User Interaction'),
+        title: const Text('Tahap 13: Form Input & Validasi'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,115 +109,91 @@ class _Tahap12PageState extends State<Tahap12Page> {
             const SizedBox(height: 20),
 
             const Text(
-              'Demo InkWell & GestureDetector:',
+              'Form Feedback Matakuliah',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-            const SizedBox(height: 8),
-            Text(
-              '• Ketuk (Tap) untuk toggle status Favorit (Efek InkWell Ripple)\n• Tekan lama (Long Press) untuk membuka Info Tambahan (GestureDetector)',
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-            ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
-            // Card Interaktif dengan InkWell & GestureDetector
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  // Toggle state favorit saat ditekan
-                  setState(() {
-                    isFavorite = !isFavorite;
-                  });
-                },
-                child: GestureDetector(
-                  onLongPress: () {
-                    // TAHAP 12: Long press gesture untuk aksi tambahan
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) => Container(
-                        padding: const EdgeInsets.all(24),
+            // TAHAP 13: Form dengan GlobalKey<FormState>
+            Form(
+              key: _formKey,
+              child: Card(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      // Field Nama
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Nama Lengkap',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.person_outline),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Nama wajib diisi';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Field NIM
+                      TextFormField(
+                        controller: _idController,
+                        decoration: const InputDecoration(
+                          labelText: 'NIM Mahasiswa',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.badge_outlined),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'NIM wajib diisi';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Field Komentar / Feedback (Validasi Minimal 5 Karakter)
+                      TextFormField(
+                        controller: _commentController,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                          labelText: 'Komentar / Feedback',
+                          hintText: 'Tuliskan masukan Anda...',
+                          border: OutlineInputBorder(),
+                          alignLabelWithHint: true,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Komentar tidak boleh kosong';
+                          }
+                          if (value.trim().length < 5) {
+                            return 'Komentar minimal 5 karakter';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Submit Button
+                      SizedBox(
                         width: double.infinity,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Informasi Matakuliah (Long Press Detected)',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.blue.shade900,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Matakuliah Responsive Layout (MOB04) berfokus pada pembentukan UI Flutter adaptif untuk berbagai ukuran layar.',
-                            ),
-                            const SizedBox(height: 16),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text('Tutup'),
-                              ),
-                            ),
-                          ],
+                        child: ElevatedButton.icon(
+                          onPressed: _submitForm,
+                          icon: const Icon(Icons.check_circle_outline),
+                          label: const Text('Kirim & Validasi Form'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
                         ),
                       ),
-                    );
-                  },
-                  child: Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.blue.shade100,
-                            child: const Icon(Icons.book, color: Colors.blue),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Responsive Layout',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'MOB04 • Tap / Hold me!',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Toggle Icon Favorite
-                          IconButton(
-                            icon: Icon(
-                              isFavorite ? Icons.favorite : Icons.favorite_border,
-                              color: isFavorite ? Colors.red : Colors.grey,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                isFavorite = !isFavorite;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+                    ],
                   ),
                 ),
               ),
