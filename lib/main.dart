@@ -22,7 +22,7 @@ class CourseExplorerApp extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------------
-// MAIN SHELL PAGE (Menampung NavigationBar & Managing Selected Index)
+// MAIN SHELL PAGE (Adaptive Navigation Shell)
 // -----------------------------------------------------------------------------
 class MainShellPage extends StatefulWidget {
   const MainShellPage({super.key});
@@ -32,7 +32,7 @@ class MainShellPage extends StatefulWidget {
 }
 
 class _MainShellPageState extends State<MainShellPage> {
-  int _currentIndex = 0;
+  int _selectedIndex = 0;
 
   // Identitas Mahasiswa (Wajib)
   final String studentName = 'Kadek Ripa Adi Putra';
@@ -47,69 +47,131 @@ class _MainShellPageState extends State<MainShellPage> {
       _buildProfilePage(),
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tahap 10: NavigationBar'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Header Identitas Mahasiswa
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue.shade200),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.person, color: Colors.blue),
-                  const SizedBox(width: 8),
-                  Text(
-                    '$studentId - $studentName',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isExpanded = constraints.maxWidth >= 840;
+
+        // TAHAP 11: Layar Lebar (Expanded >= 840px) -> Gunakan NavigationRail
+        if (isExpanded) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Tahap 11: Adaptive Navigation (Rail)'),
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+            body: Row(
+              children: [
+                NavigationRail(
+                  selectedIndex: _selectedIndex,
+                  onDestinationSelected: (int index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
+                  labelType: NavigationRailLabelType.all,
+                  destinations: const [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.home_outlined),
+                      selectedIcon: Icon(Icons.home),
+                      label: Text('Home'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.school_outlined),
+                      selectedIcon: Icon(Icons.school),
+                      label: Text('Courses'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.person_outlined),
+                      selectedIcon: Icon(Icons.person),
+                      label: Text('Profile'),
+                    ),
+                  ],
+                ),
+                const VerticalDivider(thickness: 1, width: 1),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        _buildHeader(),
+                        const SizedBox(height: 16),
+                        Expanded(child: pages[_selectedIndex]),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
+          );
+        }
 
-            // Konten Halaman Sesuai Index
-            Expanded(child: pages[_currentIndex]),
-          ],
-        ),
+        // TAHAP 11: Layar Sempit/Medium (< 840px) -> Gunakan NavigationBar
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Tahap 11: Adaptive Navigation (Bar)'),
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 16),
+                Expanded(child: pages[_selectedIndex]),
+              ],
+            ),
+          ),
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: (int index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.school_outlined),
+                selectedIcon: Icon(Icons.school),
+                label: 'Courses',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.person_outlined),
+                selectedIcon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Header Identitas
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue.shade200),
       ),
-      // TAHAP 10: Material 3 NavigationBar
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (int index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.school_outlined),
-            selectedIcon: Icon(Icons.school),
-            label: 'Courses',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outlined),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
+      child: Row(
+        children: [
+          const Icon(Icons.person, color: Colors.blue),
+          const SizedBox(width: 8),
+          Text(
+            '$studentId - $studentName',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
           ),
         ],
       ),
@@ -128,12 +190,12 @@ class _MainShellPageState extends State<MainShellPage> {
             Icon(Icons.home, size: 48, color: Colors.blue),
             SizedBox(height: 12),
             Text(
-              'Selamat Datang di Course Explorer',
+              'Home Page (Adaptive)',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             SizedBox(height: 8),
             Text(
-              'Gunakan NavigationBar di bagian bawah untuk berpindah antar halaman.',
+              'Coba ubah ukuran layar/orientasi emulator untuk melihat pergantian antaramenu bawah (NavigationBar) dan menu samping (NavigationRail).',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey),
             ),
@@ -151,21 +213,21 @@ class _MainShellPageState extends State<MainShellPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Daftar Matakuliah Active',
+          children: const [
+            Text(
+              'Daftar Matakuliah',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-            const Divider(height: 20),
+            Divider(height: 20),
             ListTile(
-              leading: const CircleAvatar(child: Text('1')),
-              title: const Text('Responsive Layout'),
-              subtitle: const Text('MOB04 • 3 SKS'),
+              leading: CircleAvatar(child: Text('1')),
+              title: Text('Responsive Layout'),
+              subtitle: Text('MOB04 • 3 SKS'),
             ),
             ListTile(
-              leading: const CircleAvatar(child: Text('2')),
-              title: const Text('Navigation & Routing'),
-              subtitle: const Text('MOB05 • 3 SKS'),
+              leading: CircleAvatar(child: Text('2')),
+              title: Text('Navigation & Routing'),
+              subtitle: Text('MOB05 • 3 SKS'),
             ),
           ],
         ),
