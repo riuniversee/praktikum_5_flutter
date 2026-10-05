@@ -22,16 +22,14 @@ class CourseExplorerApp extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------------
-// HOME PAGE (Daftar Matakuliah)
+// HOME PAGE (Menerima Result dari Detail)
 // -----------------------------------------------------------------------------
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  // Identitas Mahasiswa (Wajib)
   final String studentName = 'Kadek Ripa Adi Putra';
   final String studentId = '2455011011';
 
-  // Daftar Course Statis
   final List<Map<String, dynamic>> courses = const [
     {
       'code': 'MOB04',
@@ -60,7 +58,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tahap 8: Passing Data'),
+        title: const Text('Tahap 9: Returning Data'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -95,12 +93,11 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 16),
 
             const Text(
-              'Pilih Matakuliah untuk Melihat Detail:',
+              'Pilih Matakuliah untuk Menguji Returning Data:',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 12),
 
-            // Daftar List Matakuliah
             Expanded(
               child: ListView.builder(
                 itemCount: courses.length,
@@ -125,16 +122,29 @@ class HomePage extends StatelessWidget {
                         course['title'],
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text('${course['credits']} SKS • Status: ${course['status']}'),
+                      subtitle: Text('${course['credits']} SKS'),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        // TAHAP 8: Mengirim data course melalui constructor CourseDetailPage
-                        Navigator.push(
+                      onTap: () async {
+                        // TAHAP 9: Membuka DetailPage dan MENUNGGU (await) data kembalian
+                        final result = await Navigator.push<bool>(
                           context,
                           MaterialPageRoute(
                             builder: (context) => CourseDetailPage(course: course),
                           ),
                         );
+
+                        // Jika mengembalikan nilai true (ditekan Favorite)
+                        if (result == true && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '${course['title']} telah ditambahkan ke Favorit!',
+                              ),
+                              backgroundColor: Colors.green,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        }
                       },
                     ),
                   );
@@ -149,7 +159,7 @@ class HomePage extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------------
-// COURSE DETAIL PAGE (Menerima Data via Constructor)
+// COURSE DETAIL PAGE (Mengembalikan Data via Navigator.pop)
 // -----------------------------------------------------------------------------
 class CourseDetailPage extends StatelessWidget {
   final Map<String, dynamic> course;
@@ -207,20 +217,6 @@ class CourseDetailPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Chip(
-                          label: Text(course['code']),
-                          backgroundColor: Colors.blue.shade50,
-                        ),
-                        Chip(
-                          label: Text('${course['credits']} SKS'),
-                          backgroundColor: Colors.grey.shade200,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
                     Text(
                       course['title'],
                       style: const TextStyle(
@@ -230,23 +226,27 @@ class CourseDetailPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Status: ${course['status']}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: course['status'] == 'Active'
-                            ? Colors.green.shade800
-                            : Colors.orange.shade800,
-                      ),
-                    ),
-                    const Divider(height: 24),
-                    const Text(
-                      'Deskripsi Materi:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
                       course['desc'],
                       style: TextStyle(color: Colors.grey.shade800),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // TAHAP 9: Tombol untuk mengembalikan data 'true' ke screen sebelumnya
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          // Mengembalikan nilai true
+                          Navigator.pop(context, true);
+                        },
+                        icon: const Icon(Icons.favorite, color: Colors.red),
+                        label: const Text('Pilih / Tambah Favorit'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.pink.shade50,
+                          foregroundColor: Colors.pink.shade900,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
                     ),
                   ],
                 ),
