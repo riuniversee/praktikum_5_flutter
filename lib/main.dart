@@ -16,51 +16,23 @@ class CourseExplorerApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: const Tahap3Page(),
+      home: const Tahap4Page(),
     );
   }
 }
 
-class Tahap3Page extends StatelessWidget {
-  const Tahap3Page({super.key});
+class Tahap4Page extends StatelessWidget {
+  const Tahap4Page({super.key});
 
   // Identitas Mahasiswa
   final String studentName = 'Kadek Ripa Adi Putra';
   final String studentId = '2455011011';
 
-  // Dummy Data Daftar Matakuliah
-  final List<Map<String, String>> courses = const [
-    {
-      'code': 'CS101',
-      'title': 'Pemrograman Mobile',
-      'instructor': 'Pak Agus',
-      'icon': 'phone_android',
-    },
-    {
-      'code': 'CS102',
-      'title': 'Basis Data Lanjut',
-      'instructor': 'Pak Sindu',
-      'icon': 'storage',
-    },
-    {
-      'code': 'CS103',
-      'title': 'Pemrograman Web',
-      'instructor': 'Pak YOTA',
-      'icon': 'web',
-    },
-    {
-      'code': 'CS104',
-      'title': 'Kecerdasan Buatan',
-      'instructor': 'Bu Maria',
-      'icon': 'psychology',
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tahap 3: LayoutBuilder & Breakpoints'),
+        title: const Text('Tahap 4: Flexible & Expanded'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -91,168 +63,76 @@ class Tahap3Page extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
-            // TAHAP 3: Menggunakan LayoutBuilder untuk menentukan layout berdasarkan maxWidth
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final isCompact = constraints.maxWidth < 600;
+            const Text(
+              'Pembagian Ruang Proporsional (Flex Ratio)',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 12),
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Status Constraints Indikator
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: isCompact
-                              ? Colors.orange.shade50
-                              : Colors.teal.shade50,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: isCompact
-                                ? Colors.orange.shade300
-                                : Colors.teal.shade300,
-                          ),
+            // Demo Flexible & Expanded dengan Flex 2 : 1
+            Row(
+              children: [
+                // Section 1: Expanded (Flex = 2)
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.blue.shade400),
+                    ),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Expanded (Flex: 2)',
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              isCompact
-                                  ? Icons.phone_iphone
-                                  : Icons.desktop_windows,
-                              color: isCompact
-                                  ? Colors.orange.shade800
-                                  : Colors.teal.shade800,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Max Width: ${constraints.maxWidth.toStringAsFixed(1)}px | Mode: ${isCompact ? "Compact (1 Kolom)" : "Wide (2 Kolom Grid)"}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: isCompact
-                                      ? Colors.orange.shade900
-                                      : Colors.teal.shade900,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ],
+                        SizedBox(height: 4),
+                        Text(
+                          'Mengambil 2/3 bagian sisa ruang.',
+                          style: TextStyle(fontSize: 12),
                         ),
-                      ),
-                      const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
 
-                      // Responsive Layout
-                      Expanded(
-                        child: isCompact
-                            ? _buildListView() // Layout 1 Kolom untuk Layar Sempit
-                            : _buildGridView(), // Layout 2 Kolom untuk Layar Lebar
-                      ),
-                    ],
-                  );
-                },
-              ),
+                // Section 2: Flexible (Flex = 1)
+                Flexible(
+                  flex: 1,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.orange.shade400),
+                    ),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Flexible (Flex: 1)',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Mengambil 1/3 bagian.',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       ),
-    );
-  }
-
-  // Tampilan 1 Kolom (Compact Layout)
-  Widget _buildListView() {
-    return ListView.builder(
-      itemCount: courses.length,
-      itemBuilder: (context, index) {
-        final course = courses[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          elevation: 2,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.blue.shade100,
-              child: const Icon(Icons.book, color: Colors.blue),
-            ),
-            title: Text(
-              course['title']!,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text('Dosen: ${course['instructor']}'),
-            trailing: Chip(
-              label: Text(course['code']!),
-              backgroundColor: Colors.blue.shade50,
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  // Tampilan 2 Kolom (Wide Layout)
-  Widget _buildGridView() {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 2.5,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-      ),
-      itemCount: courses.length,
-      itemBuilder: (context, index) {
-        final course = courses[index];
-        return Card(
-          elevation: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.teal.shade100,
-                  child: const Icon(Icons.book, color: Colors.teal),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        course['title']!,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Dosen: ${course['instructor']}',
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Chip(
-                  label: Text(
-                    course['code']!,
-                    style: const TextStyle(fontSize: 11),
-                  ),
-                  backgroundColor: Colors.teal.shade50,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }
