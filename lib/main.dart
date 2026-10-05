@@ -16,122 +16,201 @@ class CourseExplorerApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: const Tahap4Page(),
+      home: const Tahap5Page(),
     );
   }
 }
 
-class Tahap4Page extends StatelessWidget {
-  const Tahap4Page({super.key});
+class Tahap5Page extends StatelessWidget {
+  const Tahap5Page({super.key});
 
-  // Identitas Mahasiswa
+  // Identitas Mahasiswa (Wajib)
   final String studentName = 'Kadek Ripa Adi Putra';
   final String studentId = '2455011011';
+
+  // Data Course Statis
+  final List<Map<String, String>> courses = const [
+    {
+      'code': 'MOB04',
+      'title': 'Responsive Layout',
+      'status': 'Active',
+      'desc': 'Mempelajari MediaQuery, LayoutBuilder, dan GridView responsif.'
+    },
+    {
+      'code': 'MOB05',
+      'title': 'Navigation',
+      'status': 'Planned',
+      'desc': 'Membuat navigasi multi-screen, passing data, dan returning data.'
+    },
+    {
+      'code': 'MOB06',
+      'title': 'Interaction',
+      'status': 'Planned',
+      'desc': 'Handling gestures, InkWell, buttons, dan feedback UI.'
+    },
+    {
+      'code': 'MOB07',
+      'title': 'State Management',
+      'status': 'Planned',
+      'desc': 'Pengelolaan state aplikasi Flutter menggunakan Provider / Bloc.'
+    },
+    {
+      'code': 'MOB08',
+      'title': 'API & Database',
+      'status': 'Planned',
+      'desc': 'Integrasi REST API backend dan penyimpanan data lokal SQLite.'
+    },
+  ];
+
+  // Aturan Breakpoint Kolom
+  int columnsFor(double width) {
+    if (width < 600) return 1;
+    if (width < 840) return 2;
+    return 3;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tahap 4: Flexible & Expanded'),
+        title: const Text('Tahap 5: GridView Responsif'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Identitas Mahasiswa
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue.shade200),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.person, color: Colors.blue),
-                  const SizedBox(width: 8),
-                  Text(
-                    '$studentId - $studentName',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final columnCount = columnsFor(constraints.maxWidth);
 
-            const Text(
-              'Pembagian Ruang Proporsional (Flex Ratio)',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 12),
-
-            // Demo Flexible & Expanded dengan Flex 2 : 1
-            Row(
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Section 1: Expanded (Flex = 2)
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade100,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.blue.shade400),
-                    ),
-                    child: const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Expanded (Flex: 2)',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                // Identitas Mahasiswa Header
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.person, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      Text(
+                        '$studentId - $studentName',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                         ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Mengambil 2/3 bagian sisa ruang.',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Indikator Grid Columns
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    'Lebar Layar: ${constraints.maxWidth.toStringAsFixed(0)} px | Jumlah Kolom Grid: $columnCount Kolom',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade800,
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(height: 12),
 
-                // Section 2: Flexible (Flex = 1)
-                Flexible(
-                  flex: 1,
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.shade100,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.orange.shade400),
+                // Responsive GridView Builder
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: columnCount,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: constraints.maxWidth < 600 ? 2.5 : 1.8,
                     ),
-                    child: const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Flexible (Flex: 1)',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                    itemCount: courses.length,
+                    itemBuilder: (context, index) {
+                      final course = courses[index];
+                      return Card(
+                        elevation: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    course['code']!,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue.shade700,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: course['status'] == 'Active'
+                                          ? Colors.green.shade100
+                                          : Colors.orange.shade100,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      course['status']!,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: course['status'] == 'Active'
+                                            ? Colors.green.shade900
+                                            : Colors.orange.shade900,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                course['title']!,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                course['desc']!,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey.shade600,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Mengambil 1/3 bagian.',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                 ),
               ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
