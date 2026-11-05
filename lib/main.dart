@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'pages/home_page.dart';
 import 'pages/courses_page.dart';
 import 'pages/profile_page.dart';
+import 'pages/notifier_experiment_page.dart';
 
 void main() {
   runApp(const CourseExplorerApp());
@@ -60,13 +61,13 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
         onToggleFavorite: _toggleFavorite,
       ),
       ProfilePage(studentId: studentId, studentName: studentName),
+      const NotifierExperimentPage(), // Menu ke-4 untuk ValueNotifier
     ];
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final isExpanded = constraints.maxWidth >= 840;
 
-        // Mode Layar Lebar (Expanded) -> NavigationRail
         if (isExpanded) {
           return Scaffold(
             appBar: AppBar(
@@ -97,6 +98,11 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
                       selectedIcon: Icon(Icons.person),
                       label: Text('Profile'),
                     ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.bolt_outlined),
+                      selectedIcon: Icon(Icons.bolt),
+                      label: Text('Notifier'),
+                    ),
                   ],
                 ),
                 const VerticalDivider(width: 1, thickness: 1),
@@ -111,7 +117,6 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
           );
         }
 
-        // Mode Layar Sempit (Compact/Medium) -> NavigationBar
         return Scaffold(
           appBar: AppBar(
             title: const Text('Course Explorer'),
@@ -141,6 +146,11 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
                 icon: Icon(Icons.person_outlined),
                 selectedIcon: Icon(Icons.person),
                 label: 'Profile',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.bolt_outlined),
+                selectedIcon: Icon(Icons.bolt),
+                label: 'Notifier',
               ),
             ],
           ),

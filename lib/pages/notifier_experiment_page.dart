@@ -5,36 +5,53 @@ class NotifierExperimentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Membuat ValueNotifier bertipe integer dengan nilai awal 0
+    // ValueNotifier untuk menampung data reaktif sederhana
     final ValueNotifier<int> counterNotifier = ValueNotifier<int>(0);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Eksperimen ValueNotifier')),
+      appBar: AppBar(
+        title: const Text('Eksperimen ValueNotifier'),
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Contoh penggunaan ValueNotifier:'),
-            const SizedBox(height: 16),
+            const Text(
+              'Tekan tombol di bawah untuk menguji ValueNotifier:',
+              style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
             
-            // 2. Membungkus widget yang hanya ingin di-rebuild saja
+            // ValueListenableBuilder mendengarkan perubahan tanpa setState() di parent
             ValueListenableBuilder<int>(
               valueListenable: counterNotifier,
               builder: (context, value, child) {
                 return Text(
                   'Nilai Counter: $value',
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.indigo,
+                  ),
                 );
               },
             ),
             
-            const SizedBox(height: 16),
-            ElevatedButton(
+            const SizedBox(height: 30),
+            ElevatedButton.icon(
               onPressed: () {
-                // 3. Mengubah nilai notifier tanpa setState() di parent
+                // Mengubah nilai secara reaktif
                 counterNotifier.value += 1;
               },
-              child: const Text('Tambah Nilai'),
+              icon: const Icon(Icons.add),
+              label: const Text('Tambah Nilai'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.indigo,
+                foregroundColor: Colors.white,
+              ),
             ),
           ],
         ),
