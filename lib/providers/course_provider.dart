@@ -1,49 +1,38 @@
 import 'package:flutter/foundation.dart';
+import '../models/course.dart';
+import '../repositories/course_repository.dart';
 
 class CourseProvider extends ChangeNotifier {
-  // Daftar data course menggunakan dynamic agar aman dari error tanda kurung sudut
-  final List<dynamic> _courses = [
-    {
-      'code': 'MOB04',
-      'title': 'Responsive Layout',
-      'credits': 3,
-      'instructor': 'Pak Agus',
-      'desc': 'Mempelajari LayoutBuilder, MediaQuery, Expanded, dan GridView responsif.'
-    },
-    {
-      'code': 'MOB05',
-      'title': 'Navigation & Routing',
-      'credits': 3,
-      'instructor': 'Pak Sindu',
-      'desc': 'Navigasi stack (push/pop), passing data, serta adaptive navigation.'
-    },
-    {
-      'code': 'MOB06',
-      'title': 'User Interaction',
-      'credits': 2,
-      'instructor': 'Pak YOTA',
-      'desc': 'InkWell, GestureDetector, Button events, dan pengolahan gesture UI.'
-    },
-    {
-      'code': 'MOB07',
-      'title': 'Form & Validation',
-      'credits': 3,
-      'instructor': 'Bu Maria',
-      'desc': 'Pembuatan form interaktif dengan TextFormField dan GlobalKey validation.'
-    },
-    {
-      'code': 'MOB08',
-      'title': 'Feedback & Dialogs',
-      'credits': 2,
-      'instructor': 'Pak Agus',
-      'desc': 'Penerapan SnackBar, AlertDialog konfirmasi, dan progress loading.'
-    },
-  ];
+  final CourseRepository repository;
+
+  CourseProvider(this.repository);
+
+  List<Course> _courses = [];
+  bool _isLoading = false;
+  String? _error;
 
   final Set<String> _favoriteCodes = {};
 
-  List<dynamic> get courses => _courses;
+  List<Course> get courses => _courses;
+  bool get isLoading => _isLoading;
+  String? get error => _error;
   Set<String> get favoriteCodes => _favoriteCodes;
+
+  // Fungsi untuk mengambil data secara asynchronous melalui repository
+  Future<void> loadCourses() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners(); // Memicu UI untuk menampilkan loading state
+
+    try {
+      _courses = await repository.getCourses();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners(); // Memicu UI untuk memperbarui tampilan setelah data/error didapat
+    }
+  }
 
   void toggleFavorite(String code) {
     if (_favoriteCodes.contains(code)) {

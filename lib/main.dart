@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/course_provider.dart';
+import 'repositories/course_repository.dart'; // Tambahkan ini
+import 'services/course_service.dart';         // Tambahkan ini
 import 'pages/home_page.dart';
 import 'pages/courses_page.dart';
 import 'pages/profile_page.dart';
@@ -10,7 +12,13 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => CourseProvider()),
+        ChangeNotifierProvider(
+          create: (_) => CourseProvider(
+            CourseRepository(
+              CourseService(),
+            ),
+          )..loadCourses(), // Memanggil loadCourses otomatis saat aplikasi pertama dibuka
+        ),
       ],
       child: const CourseExplorerApp(),
     ),

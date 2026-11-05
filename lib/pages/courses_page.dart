@@ -9,8 +9,18 @@ class CoursesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Menggunakan context.watch() di root widget untuk mendengarkan perubahan data course & favorite
     final courseProvider = context.watch<CourseProvider>();
+    
+    // Jika masih dalam proses loading, tampilkan indikator loading
+    if (courseProvider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // Jika terjadi error, tampilkan pesan error
+    if (courseProvider.error != null) {
+      return Center(child: Text('Error: ${courseProvider.error}'));
+    }
+
     final courses = courseProvider.courses;
     final favoriteCodes = courseProvider.favoriteCodes;
 
@@ -23,50 +33,45 @@ class CoursesPage extends StatelessWidget {
         const IdentityHeaderCard(studentId: studentId, studentName: studentName),
         const SizedBox(height: 16),
         
-        // Contoh penggunaan Consumer untuk membatasi area yang reaktif
-        Consumer<CourseProvider>(
-          builder: (context, provider, child) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Text(
-                'Total Favorit Aktif: ${provider.favoriteCodes.length}',
-                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo),
-              ),
-            );
-          },
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Text(
+            'Total Favorit Aktif: ${favoriteCodes.length}',
+            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo),
+          ),
         ),
 
         Expanded(
           child: ListView.builder(
             itemCount: courses.length,
             itemBuilder: (context, index) {
-              final course = courses[index];
-              final isFav = favoriteCodes.contains(course['code']);
+              final course = courses[index]; // Ini sekarang adalah objek bertipe Course
+              final isFav = favoriteCodes.contains(course.code);
+              
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundColor: Colors.indigo.shade100,
                     child: Text(
-                      course['code'],
+                      course.code,
                       style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           color: Colors.indigo),
                     ),
                   ),
-                  title: Text(course['title'],
+                  title: Text(course.title,
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Text(
-                      '${course['credits']} SKS • Dosen: ${course['instructor']}'),
+                      '${course.credits} SKS • Status: ${course.status}'),
                   trailing: IconButton(
                     icon: Icon(
                       isFav ? Icons.favorite : Icons.favorite_border,
                       color: isFav ? Colors.red : Colors.grey,
                     ),
-                    // 2. Menggunakan context.read() di dalam callback aksi (onPressed) agar tidak memicu rebuild tidak perlu
                     onPressed: () {
-                      context.read<CourseProvider>().toggleFavorite(course['code']);
+                      context.read<CourseProvider>().toggleFavorite(course.code);
                     },
                   ),
                   onTap: () => _openDetail(context, course, studentId, studentName),
@@ -79,7 +84,7 @@ class CoursesPage extends StatelessWidget {
     );
   }
 
-  void _openDetail(BuildContext context, Map<String, dynamic> course, String studentId, String studentName) {
+  void _openDetail(BuildContext context, dynamic course, String studentId, String studentName) {
     Navigator.push(
       context,
       MaterialPageRoute(

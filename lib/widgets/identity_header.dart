@@ -9,6 +9,7 @@ class IdentityHeaderCard extends StatelessWidget {
     required this.studentId,
     required this.studentName,
   });
+  
 
   @override
   Widget build(BuildContext context) {
