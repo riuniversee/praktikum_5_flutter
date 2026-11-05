@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/course_provider.dart';
 import 'pages/home_page.dart';
 import 'pages/courses_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/notifier_experiment_page.dart';
 
 void main() {
-  runApp(const CourseExplorerApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CourseProvider()),
+      ],
+      child: const CourseExplorerApp(),
+    ),
+  );
 }
 
 class CourseExplorerApp extends StatelessWidget {
@@ -38,30 +47,13 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
   final String studentName = 'Kadek Ripa Adi Putra';
   final String studentId = '2455011011';
 
-  final Set<String> _favoriteCodes = {};
-
-  void _toggleFavorite(String code) {
-    setState(() {
-      if (_favoriteCodes.contains(code)) {
-        _favoriteCodes.remove(code);
-      } else {
-        _favoriteCodes.add(code);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       HomePage(studentId: studentId, studentName: studentName),
-      CoursesPage(
-        studentId: studentId,
-        studentName: studentName,
-        favoriteCodes: _favoriteCodes,
-        onToggleFavorite: _toggleFavorite,
-      ),
+      const CoursesPage(), // Sekarang CoursesPage mengambil data dari Provider
       ProfilePage(studentId: studentId, studentName: studentName),
-      const NotifierExperimentPage(), // Menu ke-4 untuk ValueNotifier
+      const NotifierExperimentPage(),
     ];
 
     return LayoutBuilder(
@@ -71,7 +63,7 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
         if (isExpanded) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Course Explorer (Expanded)'),
+              title: const Text('Course Explorer (Expanded - Provider)'),
               backgroundColor: Colors.indigo,
               foregroundColor: Colors.white,
             ),
@@ -119,7 +111,7 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Course Explorer'),
+            title: const Text('Course Explorer (Provider)'),
             backgroundColor: Colors.indigo,
             foregroundColor: Colors.white,
           ),
