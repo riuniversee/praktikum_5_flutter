@@ -14,21 +14,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
-  // Daftar halaman untuk navigasi bawah
   final List<Widget> _pages = [
     const HomeDashboardView(),
     const CoursesPage(),
     const FavoritesPage(),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    // Memuat data course saat pertama kali dibuka
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CourseProvider>().loadCourses();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +52,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// Tampilan utama Dashboard Home sesuai Mockup Worksheet
 class HomeDashboardView extends StatelessWidget {
   const HomeDashboardView({super.key});
 
@@ -82,7 +71,7 @@ class HomeDashboardView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Kotak Identitas Mahasiswa
+            // 1. Kartu Identitas Mahasiswa
             Card(
               elevation: 1,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -93,12 +82,15 @@ class HomeDashboardView extends StatelessWidget {
                   children: [
                     const Icon(Icons.school, color: Colors.indigo, size: 28),
                     const SizedBox(width: 12),
-                    Text(
-                      '$studentId • $studentName',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.indigo,
+                    Expanded(
+                      child: Text(
+                        '$studentId • $studentName',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.indigo,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -163,7 +155,7 @@ class HomeDashboardView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // 3. Kartu Status Modul (Git & GitHub, Dart Fundamentals, State Management)
+            // 3. Kartu Status Modul (Lengkap dengan State Management)
             _buildModuleCard('Git & GitHub', 'done', Colors.green),
             const SizedBox(height: 10),
             _buildModuleCard('Dart Fundamentals', 'done', Colors.green),
@@ -175,7 +167,6 @@ class HomeDashboardView extends StatelessWidget {
     );
   }
 
-  // Widget helper untuk membuat kartu modul materi
   Widget _buildModuleCard(String title, String status, Color statusColor) {
     return Card(
       elevation: 1,
