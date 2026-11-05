@@ -51,7 +51,7 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       HomePage(studentId: studentId, studentName: studentName),
-      const CoursesPage(), // Sekarang CoursesPage mengambil data dari Provider
+      const CoursesPage(), // Mengambil data langsung dari CourseProvider
       ProfilePage(studentId: studentId, studentName: studentName),
       const NotifierExperimentPage(),
     ];
