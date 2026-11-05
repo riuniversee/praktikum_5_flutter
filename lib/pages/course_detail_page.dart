@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/course.dart'; // Pastikan model di-import
+import 'package:provider/provider.dart';
+import '../models/course.dart';
+import '../providers/course_provider.dart';
 
 class CourseDetailPage extends StatelessWidget {
-  final Course course; // Harus bertipe Course, bukan Map
+  final Course course;
   final String studentId;
   final String studentName;
 
@@ -15,9 +17,26 @@ class CourseDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Mendengarkan perubahan status favorit secara reaktif di halaman detail
+    final isFav = context.watch<CourseProvider>().favoriteCodes.contains(course.code);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(course.title), // Menggunakan course.title
+        title: Text(course.title),
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: Icon(
+              isFav ? Icons.favorite : Icons.favorite_border,
+              color: Colors.red,
+            ),
+            onPressed: () {
+              // Mengubah status favorit langsung dari halaman detail
+              context.read<CourseProvider>().toggleFavorite(course.code);
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -26,11 +45,11 @@ class CourseDetailPage extends StatelessWidget {
           children: [
             Text('Kode Mata Kuliah: ${course.code}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text('SKS: ${course.credits}'),
+            Text('Jumlah SKS: ${course.credits}', style: const TextStyle(fontSize: 16)),
             const SizedBox(height: 8),
-            Text('Status: ${course.status}'),
+            Text('Status / Pengajar: ${course.status}', style: const TextStyle(fontSize: 16)),
             const Divider(height: 32),
-            Text('Mahasiswa: $studentName ($studentId)'),
+            Text('Mahasiswa Pengakses: $studentName ($studentId)', style: const TextStyle(color: Colors.grey)),
           ],
         ),
       ),

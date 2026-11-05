@@ -2,88 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/course_provider.dart';
 import '../widgets/identity_header.dart';
+import '../models/course.dart';
 import 'course_detail_page.dart';
-import '../models/course.dart'; // Tambahkan baris ini di atas
+import 'favorites_page.dart';
 
-
-class CoursesPage extends StatelessWidget {
+class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final courseProvider = context.watch<CourseProvider>();
-    
-    // Jika masih dalam proses loading, tampilkan indikator loading
-    if (courseProvider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+  State<CoursesPage> createState() => _CoursesPageState();
+}
 
-    // Jika terjadi error, tampilkan pesan error
-    if (courseProvider.error != null) {
-      return Center(child: Text('Error: ${courseProvider.error}'));
-    }
-
-    final courses = courseProvider.courses;
-    final favoriteCodes = courseProvider.favoriteCodes;
-
-    const studentId = '2455011011';
-    const studentName = 'Kadek Ripa Adi Putra';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const IdentityHeaderCard(studentId: studentId, studentName: studentName),
-        const SizedBox(height: 16),
-        
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: Text(
-            'Total Favorit Aktif: ${favoriteCodes.length}',
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo),
-          ),
-        ),
-
-        Expanded(
-          child: ListView.builder(
-            itemCount: courses.length,
-            itemBuilder: (context, index) {
-              final course = courses[index]; // Ini sekarang adalah objek bertipe Course
-              final isFav = favoriteCodes.contains(course.code);
-              
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.indigo.shade100,
-                    child: Text(
-                      course.code,
-                      style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.indigo),
-                    ),
-                  ),
-                  title: Text(course.title,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text(
-                      '${course.credits} SKS • Status: ${course.status}'),
-                  trailing: IconButton(
-                    icon: Icon(
-                      isFav ? Icons.favorite : Icons.favorite_border,
-                      color: isFav ? Colors.red : Colors.grey,
-                    ),
-                    onPressed: () {
-                      context.read<CourseProvider>().toggleFavorite(course.code);
-                    },
-                  ),
-                  onTap: () => _openDetail(context, course, studentId, studentName),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
+class _CoursesPageState extends State<CoursesPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CourseProvider>().loadCourses();
+    });
   }
 
   void _openDetail(BuildContext context, Course course, String studentId, String studentName) {
@@ -94,6 +30,111 @@ class CoursesPage extends StatelessWidget {
           course: course,
           studentId: studentId,
           studentName: studentName,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const studentId = '2455011011';
+    const studentName = 'Kadek Ripa Adi Putra';
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Course Explorer v2'),
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FavoritesPage()),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const IdentityHeaderCard(studentId: studentId, studentName: studentName),
+            const SizedBox(height: 16),
+            
+            Consumer<CourseProvider>(
+              builder: (context, provider, child) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Text(
+                    'Total Favorit Aktif: ${provider.favoriteCodes.length}',
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo),
+                  ),
+                );
+              },
+            ),
+
+            Expanded(
+              child: Consumer<CourseProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (provider.error != null) {
+                    return Center(
+                      child: Text(
+                        'Terjadi Kesalahan:\n${provider.error}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    );
+                  }
+
+                  if (provider.courses.isEmpty) {
+                    return const Center(child: Text('Tidak ada mata kuliah tersedia.'));
+                  }
+
+                  return ListView.builder(
+                    itemCount: provider.courses.length,
+                    itemBuilder: (context, index) {
+                      final course = provider.courses[index];
+                      final isFav = provider.favoriteCodes.contains(course.code);
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 6.0),
+                        elevation: 2,
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.indigo.shade50,
+                            child: Text(
+                              course.code.length >= 4 ? course.code.substring(0, 4) : course.code,
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          title: Text(course.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: Text('${course.credits} SKS • Dosen: ${course.status}'),
+                          trailing: IconButton(
+                            icon: Icon(
+                              isFav ? Icons.favorite : Icons.favorite_border,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              context.read<CourseProvider>().toggleFavorite(course.code);
+                            },
+                          ),
+                          onTap: () => _openDetail(context, course, studentId, studentName),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

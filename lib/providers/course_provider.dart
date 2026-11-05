@@ -16,9 +16,13 @@ class CourseProvider extends ChangeNotifier {
   List<Course> get courses => _courses;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  
+  // TAMBAHKAN / PASTIKAN GETTER INI ADA:
   Set<String> get favoriteCodes => _favoriteCodes;
+  
+  // (Opsional jika di tempat lain menggunakan isFavorite)
+  bool isFavorite(String code) => _favoriteCodes.contains(code);
 
-  // Fungsi untuk mengambil data melalui repository
   Future<void> loadCourses() async {
     _isLoading = true;
     _error = null;
