@@ -9,12 +9,11 @@ class CoursesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mengambil data dan method dari CourseProvider
+    // 1. Menggunakan context.watch() di root widget untuk mendengarkan perubahan data course & favorite
     final courseProvider = context.watch<CourseProvider>();
     final courses = courseProvider.courses;
     final favoriteCodes = courseProvider.favoriteCodes;
 
-    // Ambil data identitas statis sementara atau dari parent jika ada
     const studentId = '2455011011';
     const studentName = 'Kadek Ripa Adi Putra';
 
@@ -23,98 +22,55 @@ class CoursesPage extends StatelessWidget {
       children: [
         const IdentityHeaderCard(studentId: studentId, studentName: studentName),
         const SizedBox(height: 16),
+        
+        // Contoh penggunaan Consumer untuk membatasi area yang reaktif
+        Consumer<CourseProvider>(
+          builder: (context, provider, child) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                'Total Favorit Aktif: ${provider.favoriteCodes.length}',
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo),
+              ),
+            );
+          },
+        ),
+
         Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final isGrid = constraints.maxWidth >= 600;
-
-              if (isGrid) {
-                return GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 2.2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
-                  itemCount: courses.length,
-                  itemBuilder: (context, index) {
-                    final course = courses[index];
-                    final isFav = favoriteCodes.contains(course['code']);
-                    return Card(
-                      child: InkWell(
-                        onTap: () => _openDetail(context, course, studentId, studentName),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(course['code'],
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.indigo)),
-                                  IconButton(
-                                    icon: Icon(
-                                      isFav ? Icons.favorite : Icons.favorite_border,
-                                      color: isFav ? Colors.red : Colors.grey,
-                                    ),
-                                    onPressed: () => courseProvider.toggleFavorite(course['code']),
-                                  ),
-                                ],
-                              ),
-                              Text(course['title'],
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 15)),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${course['credits']} SKS • ${course['instructor']}',
-                                style: const TextStyle(
-                                    fontSize: 12, color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              }
-
-              return ListView.builder(
-                itemCount: courses.length,
-                itemBuilder: (context, index) {
-                  final course = courses[index];
-                  final isFav = favoriteCodes.contains(course['code']);
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.indigo.shade100,
-                        child: Text(
-                          course['code'],
-                          style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.indigo),
-                        ),
-                      ),
-                      title: Text(course['title'],
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text(
-                          '${course['credits']} SKS • Dosen: ${course['instructor']}'),
-                      trailing: IconButton(
-                        icon: Icon(
-                          isFav ? Icons.favorite : Icons.favorite_border,
-                          color: isFav ? Colors.red : Colors.grey,
-                        ),
-                        onPressed: () => courseProvider.toggleFavorite(course['code']),
-                      ),
-                      onTap: () => _openDetail(context, course, studentId, studentName),
+          child: ListView.builder(
+            itemCount: courses.length,
+            itemBuilder: (context, index) {
+              final course = courses[index];
+              final isFav = favoriteCodes.contains(course['code']);
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.indigo.shade100,
+                    child: Text(
+                      course['code'],
+                      style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.indigo),
                     ),
-                  );
-                },
+                  ),
+                  title: Text(course['title'],
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(
+                      '${course['credits']} SKS • Dosen: ${course['instructor']}'),
+                  trailing: IconButton(
+                    icon: Icon(
+                      isFav ? Icons.favorite : Icons.favorite_border,
+                      color: isFav ? Colors.red : Colors.grey,
+                    ),
+                    // 2. Menggunakan context.read() di dalam callback aksi (onPressed) agar tidak memicu rebuild tidak perlu
+                    onPressed: () {
+                      context.read<CourseProvider>().toggleFavorite(course['code']);
+                    },
+                  ),
+                  onTap: () => _openDetail(context, course, studentId, studentName),
+                ),
               );
             },
           ),
