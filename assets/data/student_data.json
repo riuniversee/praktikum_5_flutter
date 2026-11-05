@@ -1,0 +1,34 @@
+{
+  "courses": [
+    {
+      "code": "MOB04",
+      "title": "Responsive Layout",
+      "credits": 3,
+      "status": "active"
+    },
+    {
+      "code": "MOB05",
+      "title": "Navigation & Routing",
+      "credits": 3,
+      "status": "done"
+    },
+    {
+      "code": "MOB06",
+      "title": "User Interaction",
+      "credits": 2,
+      "status": "done"
+    },
+    {
+      "code": "MOB07",
+      "title": "Form & Validation",
+      "credits": 3,
+      "status": "active"
+    },
+    {
+      "code": "MOB08",
+      "title": "Feedback & Dialogs",
+      "credits": 2,
+      "status": "active"
+    }
+  ]
+}

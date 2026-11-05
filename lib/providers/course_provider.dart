@@ -18,11 +18,11 @@ class CourseProvider extends ChangeNotifier {
   String? get error => _error;
   Set<String> get favoriteCodes => _favoriteCodes;
 
-  // Fungsi untuk mengambil data secara asynchronous melalui repository
+  // Fungsi untuk mengambil data melalui repository
   Future<void> loadCourses() async {
     _isLoading = true;
     _error = null;
-    notifyListeners(); // Memicu UI untuk menampilkan loading state
+    notifyListeners();
 
     try {
       _courses = await repository.getCourses();
@@ -30,7 +30,7 @@ class CourseProvider extends ChangeNotifier {
       _error = e.toString();
     } finally {
       _isLoading = false;
-      notifyListeners(); // Memicu UI untuk memperbarui tampilan setelah data/error didapat
+      notifyListeners();
     }
   }
 

@@ -13,10 +13,10 @@ class Course {
 
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
-      code: json['code'] as String,
-      title: json['title'] as String,
-      credits: json['credits'] as int,
-      status: json['status'] as String,
+      code: json['code'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      credits: json['credits'] as int? ?? 0,
+      status: json['status'] as String? ?? '',
     );
   }
 }

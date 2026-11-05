@@ -4,7 +4,8 @@ import '../models/course.dart';
 
 class CourseService {
   Future<List<Course>> loadCourses() async {
-    // Membaca file JSON dari asset lokal
+    // Perhatikan path di bawah ini: pastikan hanya 'assets/data/student_data.json' 
+    // (atau sesuaikan dengan letak folder aset di project kamu)
     final jsonString = await rootBundle.loadString('assets/data/student_data.json');
     final data = jsonDecode(jsonString) as Map<String, dynamic>;
     final list = data['courses'] as List<dynamic>;

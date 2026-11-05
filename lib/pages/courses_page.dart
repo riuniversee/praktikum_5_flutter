@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../providers/course_provider.dart';
 import '../widgets/identity_header.dart';
 import 'course_detail_page.dart';
+import '../models/course.dart'; // Tambahkan baris ini di atas
+
 
 class CoursesPage extends StatelessWidget {
   const CoursesPage({super.key});
@@ -84,7 +86,7 @@ class CoursesPage extends StatelessWidget {
     );
   }
 
-  void _openDetail(BuildContext context, dynamic course, String studentId, String studentName) {
+  void _openDetail(BuildContext context, Course course, String studentId, String studentName) {
     Navigator.push(
       context,
       MaterialPageRoute(
